@@ -1,0 +1,159 @@
+{
+  "widgetName": {
+    "type": "hidden",
+    "value": "Cinder Hellglass Chat"
+  },
+  "widgetAuthor": {
+    "type": "hidden",
+    "value": "Cinder"
+  },
+  "maxMessages": {
+    "type": "slider",
+    "label": "Maximum visible messages",
+    "value": 7,
+    "min": 1,
+    "max": 20,
+    "step": 1,
+    "group": "Behavior"
+  },
+  "messageLifetime": {
+    "type": "slider",
+    "label": "Message lifetime in seconds (0 = permanent)",
+    "value": 26,
+    "min": 0,
+    "max": 180,
+    "step": 1,
+    "group": "Behavior"
+  },
+  "hideCommands": {
+    "type": "checkbox",
+    "label": "Hide messages beginning with !",
+    "value": true,
+    "group": "Behavior"
+  },
+  "showBadges": {
+    "type": "checkbox",
+    "label": "Show Twitch badges",
+    "value": true,
+    "group": "Behavior"
+  },
+  "useModeration": {
+    "type": "checkbox",
+    "label": "Use StreamElements message filtering",
+    "value": true,
+    "group": "Behavior"
+  },
+  "compactBots": {
+    "type": "checkbox",
+    "label": "Use compact styling for bots",
+    "value": true,
+    "group": "Behavior"
+  },
+  "botNames": {
+    "type": "text",
+    "label": "Bot names, separated by commas",
+    "value": "streamelements,nightbot,streamlabs,blerp",
+    "group": "Behavior"
+  },
+  "blockedUsers": {
+    "type": "text",
+    "label": "Hidden usernames, separated by commas",
+    "value": "",
+    "group": "Behavior"
+  },
+  "primaryAccent": {
+    "type": "colorpicker",
+    "label": "Primary violet",
+    "value": "#d86cff",
+    "group": "Cinder Palette"
+  },
+  "secondaryAccent": {
+    "type": "colorpicker",
+    "label": "Electric cyan",
+    "value": "#4ee7ff",
+    "group": "Cinder Palette"
+  },
+  "emberAccent": {
+    "type": "colorpicker",
+    "label": "Hot ember pink",
+    "value": "#ff4f9f",
+    "group": "Cinder Palette"
+  },
+  "textColor": {
+    "type": "colorpicker",
+    "label": "Message text",
+    "value": "#f7f5ff",
+    "group": "Cinder Palette"
+  },
+  "mutedTextColor": {
+    "type": "colorpicker",
+    "label": "Bot text",
+    "value": "#c8c4d3",
+    "group": "Cinder Palette"
+  },
+  "nameColorMode": {
+    "type": "dropdown",
+    "label": "Username colors",
+    "value": "twitch",
+    "options": {
+      "twitch": "Brightened Twitch colors",
+      "accent": "Cinder violet",
+      "white": "White"
+    },
+    "group": "Cinder Palette"
+  },
+  "panelOpacity": {
+    "type": "slider",
+    "label": "Glass opacity",
+    "value": 38,
+    "min": 0,
+    "max": 90,
+    "step": 1,
+    "group": "Layout"
+  },
+  "blurAmount": {
+    "type": "slider",
+    "label": "Background blur",
+    "value": 12,
+    "min": 0,
+    "max": 30,
+    "step": 1,
+    "group": "Layout"
+  },
+  "glowStrength": {
+    "type": "slider",
+    "label": "Edge glow strength",
+    "value": 62,
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "group": "Layout"
+  },
+  "fontSize": {
+    "type": "slider",
+    "label": "Font size",
+    "value": 26,
+    "min": 14,
+    "max": 54,
+    "step": 1,
+    "group": "Layout"
+  },
+  "messageGap": {
+    "type": "slider",
+    "label": "Space between messages",
+    "value": 10,
+    "min": 0,
+    "max": 30,
+    "step": 1,
+    "group": "Layout"
+  },
+  "outerPadding": {
+    "type": "slider",
+    "label": "Outer padding",
+    "value": 18,
+    "min": 0,
+    "max": 80,
+    "step": 1,
+    "group": "Layout"
+  }
+}

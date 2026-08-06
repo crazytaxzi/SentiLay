@@ -1,0 +1,3 @@
+<div id="chat-shell">
+  <div id="chat" role="log" aria-live="polite" aria-relevant="additions removals"></div>
+</div>
