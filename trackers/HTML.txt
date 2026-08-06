@@ -11,6 +11,205 @@
     font-family: "Orbitron", "Oxanium", "Segoe UI", sans-serif !important;
     letter-spacing: 0.08em !important;
   }
+
+  #tracker-stack {
+    gap: max(var(--card-gap), 14px) !important;
+  }
+
+  .goal-card[data-key="bits"] {
+    --tube-cycle: 7.4s;
+    --drop-cycle: 5.1s;
+    --text-cycle: 8.0s;
+    --fill-cycle: 6.9s;
+    --hum-cycle: 5.7s;
+    --neon-delay: -1.9s;
+  }
+
+  .goal-card[data-key="subs"] {
+    --tube-cycle: 9.1s;
+    --drop-cycle: 6.4s;
+    --text-cycle: 9.8s;
+    --fill-cycle: 8.5s;
+    --hum-cycle: 7.2s;
+    --neon-delay: -4.3s;
+  }
+
+  .goal-card[data-key="followers"] {
+    --tube-cycle: 8.2s;
+    --drop-cycle: 5.7s;
+    --text-cycle: 8.8s;
+    --fill-cycle: 7.6s;
+    --hum-cycle: 6.3s;
+    --neon-delay: -6.2s;
+  }
+
+  .goal-card::before {
+    animation:
+      old-neon-tube var(--tube-cycle) linear infinite,
+      old-neon-dropout var(--drop-cycle) steps(1, end) infinite;
+    animation-delay:
+      var(--neon-delay),
+      calc(var(--neon-delay) - 0.75s);
+  }
+
+  .goal-card .goal-label,
+  .goal-card .goal-value {
+    animation: old-neon-text var(--text-cycle) linear infinite;
+    animation-delay: calc(var(--neon-delay) - 0.45s);
+  }
+
+  .goal-card .goal-fill {
+    animation:
+      old-neon-fill var(--fill-cycle) linear infinite,
+      old-neon-hum var(--hum-cycle) steps(1, end) infinite;
+    animation-delay:
+      calc(var(--neon-delay) - 0.25s),
+      calc(var(--neon-delay) - 1.1s);
+  }
+
+  @keyframes old-neon-tube {
+    0%, 11%, 14%, 31%, 35%, 57%, 61%, 82%, 100% {
+      opacity: 1;
+      filter: brightness(1) saturate(1);
+    }
+    12% {
+      opacity: 0.84;
+      filter: brightness(0.82) saturate(0.88);
+    }
+    13% {
+      opacity: 0.96;
+      filter: brightness(1.11) saturate(1.08);
+    }
+    32% {
+      opacity: 0.9;
+      filter: brightness(0.91);
+    }
+    33% {
+      opacity: 0.72;
+      filter: brightness(0.76);
+    }
+    34% {
+      opacity: 1;
+      filter: brightness(1.12) saturate(1.08);
+    }
+    58%, 60% {
+      opacity: 0.92;
+      filter: brightness(0.94);
+    }
+    59% {
+      opacity: 0.78;
+      filter: brightness(0.8);
+    }
+    83% {
+      opacity: 0.88;
+      filter: brightness(0.9);
+    }
+  }
+
+  @keyframes old-neon-dropout {
+    0%, 42%, 44%, 73%, 75%, 100% {
+      opacity: 1;
+    }
+    43% {
+      opacity: 0.68;
+    }
+    74% {
+      opacity: 0.82;
+    }
+  }
+
+  @keyframes old-neon-text {
+    0%, 18%, 21%, 48%, 51%, 76%, 79%, 100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    19% {
+      opacity: 0.91;
+      transform: translateX(-0.35px);
+    }
+    20% {
+      opacity: 0.98;
+      transform: translateX(0.25px);
+    }
+    49% {
+      opacity: 0.86;
+    }
+    50% {
+      opacity: 1;
+    }
+    77% {
+      opacity: 0.93;
+      transform: translateX(0.3px);
+    }
+    78% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes old-neon-fill {
+    0%, 15%, 19%, 39%, 43%, 68%, 72%, 100% {
+      opacity: 1;
+      filter: brightness(1) saturate(1);
+    }
+    16% {
+      opacity: 0.91;
+      filter: brightness(0.9);
+    }
+    17% {
+      opacity: 0.78;
+      filter: brightness(0.8);
+    }
+    18% {
+      opacity: 1;
+      filter: brightness(1.12) saturate(1.08);
+    }
+    40%, 42% {
+      opacity: 0.95;
+    }
+    41% {
+      opacity: 0.84;
+      filter: brightness(0.86);
+    }
+    69% {
+      opacity: 0.89;
+      filter: brightness(0.91);
+    }
+    70% {
+      opacity: 1;
+      filter: brightness(1.08);
+    }
+  }
+
+  @keyframes old-neon-hum {
+    0%, 53%, 55%, 84%, 86%, 100% {
+      box-shadow:
+        0 0 14px rgba(83, 255, 154, 0.32),
+        0 0 22px rgba(180, 93, 255, 0.16);
+    }
+    54% {
+      box-shadow:
+        0 0 8px rgba(83, 255, 154, 0.2),
+        0 0 13px rgba(180, 93, 255, 0.09);
+    }
+    85% {
+      box-shadow:
+        0 0 18px rgba(83, 255, 154, 0.38),
+        0 0 28px rgba(180, 93, 255, 0.2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .goal-card::before,
+    .goal-card .goal-label,
+    .goal-card .goal-value,
+    .goal-card .goal-fill {
+      animation: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+      filter: none !important;
+    }
+  }
 </style>
 
 <div id="tracker-shell">
