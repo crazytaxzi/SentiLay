@@ -7,6 +7,12 @@
     "type": "hidden",
     "value": "Cinder"
   },
+  "useLiveData": {
+    "type": "checkbox",
+    "label": "Pull current values from Twitch through StreamElements",
+    "value": true,
+    "group": "Live Data"
+  },
   "showBits": {
     "type": "checkbox",
     "label": "Show bits goal",
@@ -19,9 +25,21 @@
     "value": "Bits Goal",
     "group": "Goals"
   },
+  "bitsSource": {
+    "type": "dropdown",
+    "label": "Bits current-value source",
+    "value": "cheer-goal",
+    "options": {
+      "cheer-goal": "StreamElements bits goal progress",
+      "cheer-session": "Bits this stream session",
+      "cheer-month": "Bits this month",
+      "cheer-total": "All-time bits"
+    },
+    "group": "Live Data"
+  },
   "bitsCurrent": {
     "type": "text",
-    "label": "Bits current value",
+    "label": "Fallback bits value if live data is unavailable",
     "value": 1505,
     "group": "Goals"
   },
@@ -43,9 +61,22 @@
     "value": "Subscription Goal",
     "group": "Goals"
   },
+  "subsSource": {
+    "type": "dropdown",
+    "label": "Subscription current-value source",
+    "value": "subscriber-points",
+    "options": {
+      "subscriber-points": "Current Twitch sub points",
+      "subscriber-goal": "StreamElements sub goal progress",
+      "subscriber-total": "Current subscriber count",
+      "subscriber-session": "Subs this stream session",
+      "subscriber-month": "Subs this month"
+    },
+    "group": "Live Data"
+  },
   "subsCurrent": {
     "type": "text",
-    "label": "Subscriptions current value",
+    "label": "Fallback subscription value if live data is unavailable",
     "value": 168,
     "group": "Goals"
   },
@@ -67,9 +98,21 @@
     "value": "Follower Goal",
     "group": "Goals"
   },
+  "followersSource": {
+    "type": "dropdown",
+    "label": "Follower current-value source",
+    "value": "follower-total",
+    "options": {
+      "follower-total": "Current Twitch follower total",
+      "follower-goal": "StreamElements follower goal progress",
+      "follower-session": "Followers this stream session",
+      "follower-month": "Followers this month"
+    },
+    "group": "Live Data"
+  },
   "followersCurrent": {
     "type": "text",
-    "label": "Followers current value",
+    "label": "Fallback follower value if live data is unavailable",
     "value": 1713,
     "group": "Goals"
   },
