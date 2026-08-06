@@ -1,0 +1,78 @@
+(() => {
+  const alertbox = document.getElementById("alertbox");
+  const particles = document.getElementById("alert-particles");
+  const video = document.getElementById("alert-video");
+  const videoSource = document.getElementById("alert-video-source");
+  const audio = document.getElementById("alert-audio");
+  const audioSource = document.getElementById("alert-audio-source");
+
+  hideWhenEmpty(".alert-kicker");
+  hideWhenEmpty(".alert-amount");
+  hideWhenEmpty(".alert-message");
+  buildParticles(24);
+  prepareMedia();
+
+  const durationSeconds = safeNumber("{{widgetDuration}}", 8);
+  const exitDelay = Math.max(0, durationSeconds * 1000 - 700);
+  window.setTimeout(() => alertbox.classList.add("is-leaving"), exitDelay);
+
+  function hideWhenEmpty(selector) {
+    const element = document.querySelector(selector);
+    if (!element) return;
+
+    const text = String(element.textContent || "")
+      .replaceAll("{{announcement}}", "")
+      .replaceAll("{{amount}}", "")
+      .replaceAll("{{message}}", "")
+      .trim();
+
+    element.classList.toggle("is-empty", text.length === 0 || text === "0");
+  }
+
+  function prepareMedia() {
+    const videoUrl = cleanTemplateValue(videoSource?.getAttribute("src"));
+    if (!videoUrl) {
+      video?.classList.add("is-hidden");
+    } else {
+      video?.load();
+      video?.play().catch(() => {});
+    }
+
+    const audioUrl = cleanTemplateValue(audioSource?.getAttribute("src"));
+    if (audioUrl) {
+      audio?.load();
+      audio?.play().catch(() => {});
+    }
+  }
+
+  function cleanTemplateValue(value) {
+    const text = String(value || "").trim();
+    if (!text || text.includes("{{") || text === "null" || text === "undefined") return "";
+    return text;
+  }
+
+  function buildParticles(count) {
+    if (!particles) return;
+    particles.innerHTML = "";
+
+    for (let index = 0; index < count; index += 1) {
+      const dust = document.createElement("span");
+      dust.className = "dust";
+      dust.style.setProperty("--left", `${random(8, 92).toFixed(2)}%`);
+      dust.style.setProperty("--size", `${random(1.4, 4.2).toFixed(2)}px`);
+      dust.style.setProperty("--duration", `${random(5.6, 11.8).toFixed(2)}s`);
+      dust.style.setProperty("--delay", `${random(-10, 0).toFixed(2)}s`);
+      dust.style.setProperty("--drift", `${random(-24, 24).toFixed(2)}px`);
+      particles.appendChild(dust);
+    }
+  }
+
+  function safeNumber(value, fallback) {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? number : fallback;
+  }
+
+  function random(min, max) {
+    return min + Math.random() * (max - min);
+  }
+})();

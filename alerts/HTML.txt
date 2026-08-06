@@ -1,0 +1,23 @@
+<div id="alertbox">
+  <video id="alert-video" class="alert-video" playsinline autoplay>
+    <source id="alert-video-source" src="{{video}}" type="video/webm">
+  </video>
+
+  <audio id="alert-audio" playsinline autoplay>
+    <source id="alert-audio-source" src="{{audio}}">
+  </audio>
+
+  <div class="holo-field" aria-hidden="true">
+    <div class="holo-beam"></div>
+    <div class="holo-emitter"></div>
+    <div id="alert-particles"></div>
+  </div>
+
+  <div class="hellglass-alert">
+    <div class="scan-sweep" aria-hidden="true"></div>
+    <div class="alert-kicker">{{announcement}}</div>
+    <div class="alert-name">{{name}}</div>
+    <div class="alert-amount">{{amount}}</div>
+    <div class="alert-message">{{message}}</div>
+  </div>
+</div>
