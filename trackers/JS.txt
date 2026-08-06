@@ -1,174 +1,140 @@
-const trackerState = {
-  bits: { current: 0, goal: 5000, label: "Bits Goal", enabled: true },
-  subs: { current: 0, goal: 250, label: "Subscription Goal", enabled: true },
-  followers: { current: 0, goal: 1800, label: "Follower Goal", enabled: true }
+const keys = ["bits", "subs", "followers"];
+const state = {
+  bits: { current: 1505, goal: 5000, label: "Bits Goal", source: "cheer-goal", enabled: true, live: false },
+  subs: { current: 168, goal: 250, label: "Subscription Goal", source: "subscriber-points", enabled: true, live: false },
+  followers: { current: 1713, goal: 1800, label: "Follower Goal", source: "follower-total", enabled: true, live: false }
 };
+const cards = Object.fromEntries(keys.map(k => [k, document.querySelector(`.goal-card[data-key="${k}"]`)]));
+const particles = document.getElementById("tracker-particles");
+let useLiveData = true;
+let particleCount = 18;
 
-const trackerSettings = {
-  particleCount: 18
-};
+window.addEventListener("onWidgetLoad", obj => {
+  const f = obj.detail.fieldData || {};
+  useLiveData = bool(f.useLiveData, true);
+  particleCount = num(f.particleCount, 18, 4, 36);
 
-const trackerCards = {
-  bits: document.querySelector('.goal-card[data-key="bits"]'),
-  subs: document.querySelector('.goal-card[data-key="subs"]'),
-  followers: document.querySelector('.goal-card[data-key="followers"]')
-};
-
-const trackerParticleContainer = document.getElementById("tracker-particles");
-
-window.addEventListener("onWidgetLoad", (obj) => {
-  const fields = obj.detail.fieldData || {};
-
-  trackerState.bits.current = toNumber(fields.bitsCurrent, 1505, 0, 100000000);
-  trackerState.bits.goal = positiveGoal(fields.bitsGoal, 5000);
-  trackerState.bits.label = String(fields.bitsLabel || "Bits Goal");
-  trackerState.bits.enabled = toBool(fields.showBits, true);
-
-  trackerState.subs.current = toNumber(fields.subsCurrent, 168, 0, 100000000);
-  trackerState.subs.goal = positiveGoal(fields.subsGoal, 250);
-  trackerState.subs.label = String(fields.subsLabel || "Subscription Goal");
-  trackerState.subs.enabled = toBool(fields.showSubs, true);
-
-  trackerState.followers.current = toNumber(fields.followersCurrent, 1713, 0, 100000000);
-  trackerState.followers.goal = positiveGoal(fields.followersGoal, 1800);
-  trackerState.followers.label = String(fields.followersLabel || "Follower Goal");
-  trackerState.followers.enabled = toBool(fields.showFollowers, true);
-
-  trackerSettings.particleCount = toNumber(fields.particleCount, 18, 4, 36);
-
-  const root = document.documentElement;
-  root.style.setProperty("--primary", validColor(fields.primaryAccent, "#53ff9a"));
-  root.style.setProperty("--secondary", validColor(fields.secondaryAccent, "#b45dff"));
-  root.style.setProperty("--ember", validColor(fields.emberAccent, "#e9fff7"));
-  root.style.setProperty("--text", validColor(fields.textColor, "#f3fff9"));
-  root.style.setProperty("--muted", validColor(fields.mutedTextColor, "#bfe1d2"));
-
-  const panelAlpha = toNumber(fields.panelOpacity, 31, 0, 100) / 100;
-  const glowStrength = toNumber(fields.glowStrength, 66, 0, 100) / 100;
-  root.style.setProperty("--panel-alpha", panelAlpha.toFixed(3));
-  root.style.setProperty("--panel-alpha-mid", (panelAlpha * 0.88).toFixed(3));
-  root.style.setProperty("--panel-alpha-faint", (panelAlpha * 0.26).toFixed(3));
-  root.style.setProperty("--blur", `${toNumber(fields.blurAmount, 13, 0, 30)}px`);
-  root.style.setProperty("--glow-big", `${Math.round(22 * glowStrength)}px`);
-  root.style.setProperty("--glow-small", `${Math.round(11 * glowStrength)}px`);
-  root.style.setProperty("--label-size", `${toNumber(fields.labelSize, 14, 10, 30)}px`);
-  root.style.setProperty("--value-size", `${toNumber(fields.valueSize, 14, 10, 30)}px`);
-  root.style.setProperty("--projector-height", `${toNumber(fields.projectorHeight, 58, 24, 100)}%`);
-  root.style.setProperty("--card-gap", `${toNumber(fields.cardGap, 10, 0, 28)}px`);
-
-  document.getElementById("tracker-shell").style.padding = `${toNumber(fields.outerPadding, 14, 0, 60)}px`;
-
-  buildTrackerParticles();
+  setup("bits", f.showBits, f.bitsLabel, f.bitsCurrent, f.bitsGoal, f.bitsSource, "Bits Goal", 1505, 5000, "cheer-goal");
+  setup("subs", f.showSubs, f.subsLabel, f.subsCurrent, f.subsGoal, f.subsSource, "Subscription Goal", 168, 250, "subscriber-points");
+  setup("followers", f.showFollowers, f.followersLabel, f.followersCurrent, f.followersGoal, f.followersSource, "Follower Goal", 1713, 1800, "follower-total");
+  appearance(f);
+  buildParticles();
+  if (useLiveData) sync(obj.detail.session?.data || {}, false);
   renderAll();
 });
 
-window.addEventListener("onEventReceived", (obj) => {
-  const listener = obj.detail.listener;
-  const event = obj.detail.event || {};
-  const data = event.data || {};
-
-  if (listener === "cheer-latest" && trackerState.bits.enabled) {
-    const amount = toNumber(data.amount ?? event.amount ?? data.bits ?? 0, 0, 0, 100000000);
-    if (amount > 0) updateTracker("bits", trackerState.bits.current + amount);
-    return;
-  }
-
-  if (listener === "subscriber-latest" && trackerState.subs.enabled) {
-    const amount = extractSubAmount(data, event);
-    if (amount > 0) updateTracker("subs", trackerState.subs.current + amount);
-    return;
-  }
-
-  if (listener === "follower-latest" && trackerState.followers.enabled) {
-    updateTracker("followers", trackerState.followers.current + 1);
-  }
+window.addEventListener("onSessionUpdate", obj => {
+  if (useLiveData) sync(obj.detail.session || {}, true);
 });
 
-function renderAll() {
-  ["bits", "subs", "followers"].forEach((key) => renderCard(key));
+window.addEventListener("onEventReceived", obj => {
+  const type = obj.detail.listener;
+  const event = obj.detail.event?.data || obj.detail.event || {};
+  const key = type === "cheer-latest" ? "bits" : type === "subscriber-latest" ? "subs" : type === "follower-latest" ? "followers" : null;
+  if (!key || !state[key].enabled) return;
+  pulse(key);
+  if (useLiveData && state[key].live) return;
+  const add = key === "bits" ? num(event.amount ?? event.bits, 0, 0, 100000000)
+    : key === "subs" ? Math.max(1, num(event.bulkGifted ?? event.count, 1, 1, 1000000)) : 1;
+  state[key].current += add;
+  render(key);
+});
+
+function setup(key, enabled, label, current, goal, source, fallbackLabel, fallbackCurrent, fallbackGoal, fallbackSource) {
+  state[key].enabled = bool(enabled, true);
+  state[key].label = String(label || fallbackLabel);
+  state[key].current = num(current, fallbackCurrent, 0, 100000000);
+  state[key].goal = num(goal, fallbackGoal, 1, 100000000);
+  state[key].source = String(source || fallbackSource);
 }
 
-function renderCard(key) {
-  const state = trackerState[key];
-  const card = trackerCards[key];
+function sync(data, animate) {
+  keys.forEach(key => {
+    const value = metric(data, state[key].source);
+    if (value === null) return;
+    const changed = value !== state[key].current;
+    state[key].current = value;
+    state[key].live = true;
+    render(key);
+    if (animate && changed) pulse(key);
+  });
+}
+
+function metric(data, source) {
+  const map = {
+    "cheer-goal": ["cheer-goal", "amount"], "cheer-session": ["cheer-session", "amount"],
+    "cheer-month": ["cheer-month", "amount"], "cheer-total": ["cheer-total", "amount"],
+    "subscriber-points": ["subscriber-points", "amount"], "subscriber-goal": ["subscriber-goal", "amount"],
+    "subscriber-total": ["subscriber-total", "count"], "subscriber-session": ["subscriber-session", "count"],
+    "subscriber-month": ["subscriber-month", "count"], "follower-goal": ["follower-goal", "amount"],
+    "follower-total": ["follower-total", "count"], "follower-session": ["follower-session", "count"],
+    "follower-month": ["follower-month", "count"]
+  };
+  const path = map[source];
+  if (!path) return null;
+  const value = Number(data?.[path[0]]?.[path[1]]);
+  return Number.isFinite(value) ? Math.max(0, value) : null;
+}
+
+function renderAll() { keys.forEach(render); }
+function render(key) {
+  const s = state[key], card = cards[key];
   if (!card) return;
-
-  card.style.display = state.enabled ? "block" : "none";
-  if (!state.enabled) return;
-
-  card.querySelector(".goal-label").textContent = state.label;
-  card.querySelector(".current").textContent = formatNumber(state.current);
-  card.querySelector(".goal").textContent = formatNumber(state.goal);
-
-  const percent = Math.max(0, Math.min(100, (state.current / Math.max(1, state.goal)) * 100));
-  card.querySelector(".goal-fill").style.width = `${percent}%`;
+  card.style.display = s.enabled ? "block" : "none";
+  if (!s.enabled) return;
+  card.querySelector(".goal-label").textContent = s.label;
+  card.querySelector(".current").textContent = fmt(s.current);
+  card.querySelector(".goal").textContent = fmt(s.goal);
+  card.querySelector(".goal-fill").style.width = `${Math.min(100, Math.max(0, s.current / s.goal * 100))}%`;
 }
 
-function updateTracker(key, nextValue) {
-  trackerState[key].current = Math.max(0, nextValue);
-  renderCard(key);
-  pulseCard(key);
-}
-
-function pulseCard(key) {
-  const card = trackerCards[key];
+function pulse(key) {
+  const card = cards[key];
   if (!card) return;
   card.classList.remove("is-updating");
   void card.offsetWidth;
   card.classList.add("is-updating");
-  window.setTimeout(() => card.classList.remove("is-updating"), 850);
+  setTimeout(() => card.classList.remove("is-updating"), 850);
 }
 
-function extractSubAmount(data, event) {
-  const direct = toNumber(data.amount ?? event.amount ?? 0, 0, 0, 1000000);
-  if (direct > 0) return direct;
-
-  const gifted = toNumber(data.bulkGifted ?? data.gifted ?? 0, 0, 0, 1000000);
-  if (gifted > 0) return gifted;
-
-  const tierAmount = toNumber(data.count ?? 0, 0, 0, 1000000);
-  return tierAmount > 0 ? tierAmount : 1;
+function appearance(f) {
+  const root = document.documentElement;
+  root.style.setProperty("--primary", color(f.primaryAccent, "#53ff9a"));
+  root.style.setProperty("--secondary", color(f.secondaryAccent, "#b45dff"));
+  root.style.setProperty("--ember", color(f.emberAccent, "#e9fff7"));
+  root.style.setProperty("--text", color(f.textColor, "#f3fff9"));
+  root.style.setProperty("--muted", color(f.mutedTextColor, "#bfe1d2"));
+  const alpha = num(f.panelOpacity, 31, 0, 100) / 100;
+  const glow = num(f.glowStrength, 66, 0, 100) / 100;
+  root.style.setProperty("--panel-alpha", alpha.toFixed(3));
+  root.style.setProperty("--panel-alpha-mid", (alpha * .88).toFixed(3));
+  root.style.setProperty("--panel-alpha-faint", (alpha * .26).toFixed(3));
+  root.style.setProperty("--blur", `${num(f.blurAmount, 13, 0, 30)}px`);
+  root.style.setProperty("--glow-big", `${Math.round(22 * glow)}px`);
+  root.style.setProperty("--glow-small", `${Math.round(11 * glow)}px`);
+  root.style.setProperty("--label-size", `${num(f.labelSize, 14, 10, 30)}px`);
+  root.style.setProperty("--value-size", `${num(f.valueSize, 14, 10, 30)}px`);
+  root.style.setProperty("--projector-height", `${num(f.projectorHeight, 58, 24, 100)}%`);
+  root.style.setProperty("--card-gap", `${num(f.cardGap, 10, 0, 28)}px`);
+  document.getElementById("tracker-shell").style.padding = `${num(f.outerPadding, 14, 0, 60)}px`;
 }
 
-function buildTrackerParticles() {
-  trackerParticleContainer.innerHTML = "";
-  for (let index = 0; index < trackerSettings.particleCount; index += 1) {
-    const dust = document.createElement("span");
-    dust.className = "dust";
-    dust.style.setProperty("--left", `${randomBetween(6, 94).toFixed(2)}%`);
-    dust.style.setProperty("--size", `${randomBetween(1.4, 3.8).toFixed(2)}px`);
-    dust.style.setProperty("--duration", `${randomBetween(6.2, 13.4).toFixed(2)}s`);
-    dust.style.setProperty("--delay", `${randomBetween(-12, 0).toFixed(2)}s`);
-    dust.style.setProperty("--drift", `${randomBetween(-14, 14).toFixed(2)}px`);
-    trackerParticleContainer.appendChild(dust);
+function buildParticles() {
+  particles.innerHTML = "";
+  for (let i = 0; i < particleCount; i++) {
+    const d = document.createElement("span");
+    d.className = "dust";
+    d.style.setProperty("--left", `${rnd(6, 94)}%`);
+    d.style.setProperty("--size", `${rnd(1.4, 3.8)}px`);
+    d.style.setProperty("--duration", `${rnd(6.2, 13.4)}s`);
+    d.style.setProperty("--delay", `${rnd(-12, 0)}s`);
+    d.style.setProperty("--drift", `${rnd(-14, 14)}px`);
+    particles.appendChild(d);
   }
 }
 
-function formatNumber(value) {
-  return Number(value).toLocaleString("en-US");
-}
-
-function toBool(value, fallback) {
-  if (typeof value === "boolean") return value;
-  if (value === "true") return true;
-  if (value === "false") return false;
-  return fallback;
-}
-
-function toNumber(value, fallback, min, max) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return fallback;
-  return Math.min(max, Math.max(min, number));
-}
-
-function positiveGoal(value, fallback) {
-  return Math.max(1, toNumber(value, fallback, 1, 100000000));
-}
-
-function validColor(value, fallback) {
-  return /^#[0-9a-f]{6}$/i.test(String(value || "")) ? value : fallback;
-}
-
-function randomBetween(min, max) {
-  return min + Math.random() * (max - min);
-}
+const bool = (v, fallback) => typeof v === "boolean" ? v : v === "true" ? true : v === "false" ? false : fallback;
+const num = (v, fallback, min, max) => Number.isFinite(Number(v)) ? Math.min(max, Math.max(min, Number(v))) : fallback;
+const color = (v, fallback) => /^#[0-9a-f]{6}$/i.test(String(v || "")) ? v : fallback;
+const fmt = v => Number(v).toLocaleString("en-US");
+const rnd = (min, max) => (min + Math.random() * (max - min)).toFixed(2);
