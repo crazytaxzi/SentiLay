@@ -15,6 +15,7 @@ let settings = {
 const chatShell = document.getElementById("chat-shell");
 const chat = document.getElementById("chat");
 const particleContainer = document.getElementById("chat-particles");
+let trimFrame = 0;
 
 window.addEventListener("onWidgetLoad", (obj) => {
   const fields = obj.detail.fieldData || {};
@@ -213,9 +214,23 @@ function enforceChatBounds() {
     removeMessage(chat.firstElementChild, true);
   }
 
-  while (chat.scrollHeight > chat.clientHeight && chat.children.length > 1) {
-    removeMessage(chat.firstElementChild, true);
-  }
+  if (trimFrame) cancelAnimationFrame(trimFrame);
+  trimFrame = requestAnimationFrame(() => {
+    trimFrame = 0;
+    const computed = getComputedStyle(chat);
+    const gap = Number.parseFloat(computed.rowGap || computed.gap) || 0;
+    let usedHeight = [...chat.children].reduce((total, node, index) => {
+      return total + node.offsetHeight + (index > 0 ? gap : 0);
+    }, 0);
+    const availableHeight = chat.clientHeight;
+
+    while (chat.children.length > 1 && usedHeight > availableHeight + 1) {
+      const oldest = chat.firstElementChild;
+      usedHeight -= oldest.offsetHeight;
+      if (chat.children.length > 1) usedHeight -= gap;
+      removeMessage(oldest, true);
+    }
+  });
 }
 
 function removeByData(key, value) {
