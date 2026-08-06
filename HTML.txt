@@ -1,3 +1,19 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Oxanium:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  body,
+  .message-row,
+  .message-text {
+    font-family: "Oxanium", "Segoe UI", sans-serif !important;
+  }
+
+  .username {
+    font-family: "Orbitron", "Oxanium", "Segoe UI", sans-serif !important;
+    letter-spacing: 0.035em !important;
+  }
+</style>
+
 <div id="chat-shell">
   <div id="chat-ambient" aria-hidden="true">
     <div class="projector-base"></div>
