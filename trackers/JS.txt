@@ -1,0 +1,174 @@
+const trackerState = {
+  bits: { current: 0, goal: 5000, label: "Bits Goal", enabled: true },
+  subs: { current: 0, goal: 250, label: "Subscription Goal", enabled: true },
+  followers: { current: 0, goal: 1800, label: "Follower Goal", enabled: true }
+};
+
+const trackerSettings = {
+  particleCount: 18
+};
+
+const trackerCards = {
+  bits: document.querySelector('.goal-card[data-key="bits"]'),
+  subs: document.querySelector('.goal-card[data-key="subs"]'),
+  followers: document.querySelector('.goal-card[data-key="followers"]')
+};
+
+const trackerParticleContainer = document.getElementById("tracker-particles");
+
+window.addEventListener("onWidgetLoad", (obj) => {
+  const fields = obj.detail.fieldData || {};
+
+  trackerState.bits.current = toNumber(fields.bitsCurrent, 1505, 0, 100000000);
+  trackerState.bits.goal = positiveGoal(fields.bitsGoal, 5000);
+  trackerState.bits.label = String(fields.bitsLabel || "Bits Goal");
+  trackerState.bits.enabled = toBool(fields.showBits, true);
+
+  trackerState.subs.current = toNumber(fields.subsCurrent, 168, 0, 100000000);
+  trackerState.subs.goal = positiveGoal(fields.subsGoal, 250);
+  trackerState.subs.label = String(fields.subsLabel || "Subscription Goal");
+  trackerState.subs.enabled = toBool(fields.showSubs, true);
+
+  trackerState.followers.current = toNumber(fields.followersCurrent, 1713, 0, 100000000);
+  trackerState.followers.goal = positiveGoal(fields.followersGoal, 1800);
+  trackerState.followers.label = String(fields.followersLabel || "Follower Goal");
+  trackerState.followers.enabled = toBool(fields.showFollowers, true);
+
+  trackerSettings.particleCount = toNumber(fields.particleCount, 18, 4, 36);
+
+  const root = document.documentElement;
+  root.style.setProperty("--primary", validColor(fields.primaryAccent, "#53ff9a"));
+  root.style.setProperty("--secondary", validColor(fields.secondaryAccent, "#b45dff"));
+  root.style.setProperty("--ember", validColor(fields.emberAccent, "#e9fff7"));
+  root.style.setProperty("--text", validColor(fields.textColor, "#f3fff9"));
+  root.style.setProperty("--muted", validColor(fields.mutedTextColor, "#bfe1d2"));
+
+  const panelAlpha = toNumber(fields.panelOpacity, 31, 0, 100) / 100;
+  const glowStrength = toNumber(fields.glowStrength, 66, 0, 100) / 100;
+  root.style.setProperty("--panel-alpha", panelAlpha.toFixed(3));
+  root.style.setProperty("--panel-alpha-mid", (panelAlpha * 0.88).toFixed(3));
+  root.style.setProperty("--panel-alpha-faint", (panelAlpha * 0.26).toFixed(3));
+  root.style.setProperty("--blur", `${toNumber(fields.blurAmount, 13, 0, 30)}px`);
+  root.style.setProperty("--glow-big", `${Math.round(22 * glowStrength)}px`);
+  root.style.setProperty("--glow-small", `${Math.round(11 * glowStrength)}px`);
+  root.style.setProperty("--label-size", `${toNumber(fields.labelSize, 14, 10, 30)}px`);
+  root.style.setProperty("--value-size", `${toNumber(fields.valueSize, 14, 10, 30)}px`);
+  root.style.setProperty("--projector-height", `${toNumber(fields.projectorHeight, 58, 24, 100)}%`);
+  root.style.setProperty("--card-gap", `${toNumber(fields.cardGap, 10, 0, 28)}px`);
+
+  document.getElementById("tracker-shell").style.padding = `${toNumber(fields.outerPadding, 14, 0, 60)}px`;
+
+  buildTrackerParticles();
+  renderAll();
+});
+
+window.addEventListener("onEventReceived", (obj) => {
+  const listener = obj.detail.listener;
+  const event = obj.detail.event || {};
+  const data = event.data || {};
+
+  if (listener === "cheer-latest" && trackerState.bits.enabled) {
+    const amount = toNumber(data.amount ?? event.amount ?? data.bits ?? 0, 0, 0, 100000000);
+    if (amount > 0) updateTracker("bits", trackerState.bits.current + amount);
+    return;
+  }
+
+  if (listener === "subscriber-latest" && trackerState.subs.enabled) {
+    const amount = extractSubAmount(data, event);
+    if (amount > 0) updateTracker("subs", trackerState.subs.current + amount);
+    return;
+  }
+
+  if (listener === "follower-latest" && trackerState.followers.enabled) {
+    updateTracker("followers", trackerState.followers.current + 1);
+  }
+});
+
+function renderAll() {
+  ["bits", "subs", "followers"].forEach((key) => renderCard(key));
+}
+
+function renderCard(key) {
+  const state = trackerState[key];
+  const card = trackerCards[key];
+  if (!card) return;
+
+  card.style.display = state.enabled ? "block" : "none";
+  if (!state.enabled) return;
+
+  card.querySelector(".goal-label").textContent = state.label;
+  card.querySelector(".current").textContent = formatNumber(state.current);
+  card.querySelector(".goal").textContent = formatNumber(state.goal);
+
+  const percent = Math.max(0, Math.min(100, (state.current / Math.max(1, state.goal)) * 100));
+  card.querySelector(".goal-fill").style.width = `${percent}%`;
+}
+
+function updateTracker(key, nextValue) {
+  trackerState[key].current = Math.max(0, nextValue);
+  renderCard(key);
+  pulseCard(key);
+}
+
+function pulseCard(key) {
+  const card = trackerCards[key];
+  if (!card) return;
+  card.classList.remove("is-updating");
+  void card.offsetWidth;
+  card.classList.add("is-updating");
+  window.setTimeout(() => card.classList.remove("is-updating"), 850);
+}
+
+function extractSubAmount(data, event) {
+  const direct = toNumber(data.amount ?? event.amount ?? 0, 0, 0, 1000000);
+  if (direct > 0) return direct;
+
+  const gifted = toNumber(data.bulkGifted ?? data.gifted ?? 0, 0, 0, 1000000);
+  if (gifted > 0) return gifted;
+
+  const tierAmount = toNumber(data.count ?? 0, 0, 0, 1000000);
+  return tierAmount > 0 ? tierAmount : 1;
+}
+
+function buildTrackerParticles() {
+  trackerParticleContainer.innerHTML = "";
+  for (let index = 0; index < trackerSettings.particleCount; index += 1) {
+    const dust = document.createElement("span");
+    dust.className = "dust";
+    dust.style.setProperty("--left", `${randomBetween(6, 94).toFixed(2)}%`);
+    dust.style.setProperty("--size", `${randomBetween(1.4, 3.8).toFixed(2)}px`);
+    dust.style.setProperty("--duration", `${randomBetween(6.2, 13.4).toFixed(2)}s`);
+    dust.style.setProperty("--delay", `${randomBetween(-12, 0).toFixed(2)}s`);
+    dust.style.setProperty("--drift", `${randomBetween(-14, 14).toFixed(2)}px`);
+    trackerParticleContainer.appendChild(dust);
+  }
+}
+
+function formatNumber(value) {
+  return Number(value).toLocaleString("en-US");
+}
+
+function toBool(value, fallback) {
+  if (typeof value === "boolean") return value;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return fallback;
+}
+
+function toNumber(value, fallback, min, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.min(max, Math.max(min, number));
+}
+
+function positiveGoal(value, fallback) {
+  return Math.max(1, toNumber(value, fallback, 1, 100000000));
+}
+
+function validColor(value, fallback) {
+  return /^#[0-9a-f]{6}$/i.test(String(value || "")) ? value : fallback;
+}
+
+function randomBetween(min, max) {
+  return min + Math.random() * (max - min);
+}

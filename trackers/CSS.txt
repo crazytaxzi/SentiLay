@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Rajdhani:wght@600;700&display=swap');
+
+:root {
+  --primary: #53ff9a;
+  --secondary: #b45dff;
+  --ember: #e9fff7;
+  --text: #f3fff9;
+  --muted: #bfe1d2;
+  --panel-alpha: 0.31;
+  --panel-alpha-mid: 0.27;
+  --panel-alpha-faint: 0.08;
+  --blur: 13px;
+  --glow-big: 14px;
+  --glow-small: 8px;
+  --label-size: 14px;
+  --value-size: 14px;
+  --projector-height: 58%;
+  --card-gap: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+#tracker-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 14px;
+  overflow: hidden;
+}
+
+#tracker-ambient {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--projector-height);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#tracker-stack {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+}
+
+.projector-base {
+  position: absolute;
+  left: 5%;
+  right: 4%;
+  bottom: -1px;
+  height: 16px;
+  border-radius: 18px 18px 0 0;
+  background:
+    linear-gradient(90deg,
+      rgba(83, 255, 154, 0) 0%,
+      rgba(83, 255, 154, 0.24) 16%,
+      rgba(83, 255, 154, 0.55) 48%,
+      rgba(180, 93, 255, 0.32) 85%,
+      rgba(180, 93, 255, 0) 100%);
+  filter: blur(2px);
+  box-shadow:
+    0 0 14px rgba(83, 255, 154, 0.38),
+    0 0 30px rgba(180, 93, 255, 0.16);
+}
+
+.projector-beam {
+  position: absolute;
+  left: 4%;
+  bottom: 4px;
+  right: 4%;
+  height: calc(100% - 4px);
+  background:
+    radial-gradient(130% 86% at 50% 100%, rgba(83, 255, 154, 0.23) 0%, rgba(83, 255, 154, 0.08) 32%, rgba(180, 93, 255, 0.03) 58%, transparent 76%),
+    linear-gradient(180deg, rgba(180, 93, 255, 0.09), rgba(83, 255, 154, 0.02) 38%, transparent 76%);
+  clip-path: polygon(0 100%, 10% 16%, 90% 16%, 100% 100%);
+  filter: blur(6px);
+}
+
+#tracker-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+#tracker-particles .dust {
+  position: absolute;
+  bottom: -8%;
+  width: var(--size);
+  height: var(--size);
+  left: var(--left);
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 255, 247, 0.95) 0%, rgba(83, 255, 154, 0.72) 45%, rgba(180, 93, 255, 0.22) 78%, transparent 100%);
+  box-shadow: 0 0 8px rgba(83, 255, 154, 0.20);
+  animation: dust-rise var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.goal-card {
+  position: relative;
+  width: 100%;
+  padding: 10px 12px 11px 16px;
+  overflow: hidden;
+  border-radius: 14px 4px 14px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(103deg,
+      rgba(7, 10, 19, var(--panel-alpha)) 0%,
+      rgba(13, 18, 24, var(--panel-alpha-mid)) 68%,
+      rgba(11, 10, 22, var(--panel-alpha-faint)) 100%);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.24),
+    0 0 16px rgba(83, 255, 154, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(var(--blur)) saturate(142%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(142%);
+}
+
+.goal-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 52%, var(--secondary)) 44%, var(--secondary));
+  box-shadow:
+    0 0 var(--glow-big) rgba(83, 255, 154, 0.44),
+    0 0 var(--glow-small) rgba(180, 93, 255, 0.30);
+}
+
+.goal-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(83, 255, 154, 0.025) 54%, rgba(83, 255, 154, 0.09) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.10), rgba(180, 93, 255, 0.05) 34%, transparent 34%, transparent 66%, rgba(83, 255, 154, 0.03) 66%, transparent 72%);
+  pointer-events: none;
+  opacity: 0.72;
+}
+
+.goal-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.goal-label {
+  color: var(--text);
+  font-size: var(--label-size);
+  font-family: "Rajdhani", "Segoe UI", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(83, 255, 154, 0.16);
+}
+
+.goal-value {
+  color: var(--ember);
+  font-size: var(--value-size);
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+  text-shadow: 0 0 10px rgba(180, 93, 255, 0.16);
+}
+
+.goal-value .sep,
+.goal-value .goal {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.goal-bar {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.goal-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(83, 255, 154, 0.92), rgba(115, 255, 190, 0.86) 54%, rgba(180, 93, 255, 0.86));
+  box-shadow:
+    0 0 14px rgba(83, 255, 154, 0.32),
+    0 0 22px rgba(180, 93, 255, 0.16);
+  transition: width 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.goal-sheen {
+  position: absolute;
+  inset: 0 auto 0 -18%;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.46), transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+.goal-card.is-updating .goal-sheen {
+  animation: sheen-pass 760ms ease-out;
+}
+
+.goal-card.is-updating {
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.24),
+    0 0 24px rgba(83, 255, 154, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@keyframes sheen-pass {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(700%);
+    opacity: 0;
+  }
+}
+
+@keyframes dust-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.7);
+  }
+  12% {
+    opacity: 0.36;
+  }
+  78% {
+    opacity: 0.22;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift), -122%, 0) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .goal-fill,
+  .goal-card.is-updating .goal-sheen,
+  #tracker-particles .dust {
+    animation-duration: 1ms;
+    transition-duration: 1ms;
+  }
+}

@@ -1,0 +1,33 @@
+<div id="tracker-shell">
+  <div id="tracker-ambient" aria-hidden="true">
+    <div class="projector-base"></div>
+    <div class="projector-beam"></div>
+    <div id="tracker-particles"></div>
+  </div>
+
+  <div id="tracker-stack">
+    <div class="goal-card" data-key="bits">
+      <div class="goal-top">
+        <span class="goal-label">Bits Goal</span>
+        <span class="goal-value"><span class="current">0</span><span class="sep"> / </span><span class="goal">0</span></span>
+      </div>
+      <div class="goal-bar"><span class="goal-fill"></span><span class="goal-sheen"></span></div>
+    </div>
+
+    <div class="goal-card" data-key="subs">
+      <div class="goal-top">
+        <span class="goal-label">Subscription Goal</span>
+        <span class="goal-value"><span class="current">0</span><span class="sep"> / </span><span class="goal">0</span></span>
+      </div>
+      <div class="goal-bar"><span class="goal-fill"></span><span class="goal-sheen"></span></div>
+    </div>
+
+    <div class="goal-card" data-key="followers">
+      <div class="goal-top">
+        <span class="goal-label">Follower Goal</span>
+        <span class="goal-value"><span class="current">0</span><span class="sep"> / </span><span class="goal">0</span></span>
+      </div>
+      <div class="goal-bar"><span class="goal-fill"></span><span class="goal-sheen"></span></div>
+    </div>
+  </div>
+</div>

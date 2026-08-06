@@ -1,71 +1,83 @@
 {
   "widgetName": {
     "type": "hidden",
-    "value": "Cinder HellGlass Holo Chat"
+    "value": "Cinder HellGlass Holo Trackers"
   },
   "widgetAuthor": {
     "type": "hidden",
     "value": "Cinder"
   },
-  "maxMessages": {
-    "type": "slider",
-    "label": "Maximum visible messages",
-    "value": 7,
-    "min": 1,
-    "max": 30,
-    "step": 1,
-    "group": "Behavior"
-  },
-  "messageLifetime": {
-    "type": "slider",
-    "label": "Message lifetime in seconds (0 = permanent)",
-    "value": 26,
-    "min": 0,
-    "max": 180,
-    "step": 1,
-    "group": "Behavior"
-  },
-  "hideCommands": {
+  "showBits": {
     "type": "checkbox",
-    "label": "Hide messages beginning with !",
+    "label": "Show bits goal",
     "value": true,
-    "group": "Behavior"
+    "group": "Goals"
   },
-  "showBadges": {
-    "type": "checkbox",
-    "label": "Show Twitch badges",
-    "value": true,
-    "group": "Behavior"
-  },
-  "useModeration": {
-    "type": "checkbox",
-    "label": "Use StreamElements message filtering",
-    "value": true,
-    "group": "Behavior"
-  },
-  "compactBots": {
-    "type": "checkbox",
-    "label": "Use compact styling for listed bots",
-    "value": true,
-    "group": "Behavior"
-  },
-  "hideListedBots": {
-    "type": "checkbox",
-    "label": "Hide listed bots entirely",
-    "value": false,
-    "group": "Behavior"
-  },
-  "botNames": {
+  "bitsLabel": {
     "type": "text",
-    "label": "Bot names, separated by commas",
-    "value": "streamelements,nightbot,streamlabs,blerp",
-    "group": "Behavior"
+    "label": "Bits label",
+    "value": "Bits Goal",
+    "group": "Goals"
   },
-  "blockedUsers": {
+  "bitsCurrent": {
     "type": "text",
-    "label": "Hidden usernames, separated by commas",
-    "value": "",
-    "group": "Behavior"
+    "label": "Bits current value",
+    "value": 1505,
+    "group": "Goals"
+  },
+  "bitsGoal": {
+    "type": "text",
+    "label": "Bits goal value",
+    "value": 5000,
+    "group": "Goals"
+  },
+  "showSubs": {
+    "type": "checkbox",
+    "label": "Show subscription goal",
+    "value": true,
+    "group": "Goals"
+  },
+  "subsLabel": {
+    "type": "text",
+    "label": "Subscription label",
+    "value": "Subscription Goal",
+    "group": "Goals"
+  },
+  "subsCurrent": {
+    "type": "text",
+    "label": "Subscriptions current value",
+    "value": 168,
+    "group": "Goals"
+  },
+  "subsGoal": {
+    "type": "text",
+    "label": "Subscriptions goal value",
+    "value": 250,
+    "group": "Goals"
+  },
+  "showFollowers": {
+    "type": "checkbox",
+    "label": "Show follower goal",
+    "value": true,
+    "group": "Goals"
+  },
+  "followersLabel": {
+    "type": "text",
+    "label": "Follower label",
+    "value": "Follower Goal",
+    "group": "Goals"
+  },
+  "followersCurrent": {
+    "type": "text",
+    "label": "Followers current value",
+    "value": 1713,
+    "group": "Goals"
+  },
+  "followersGoal": {
+    "type": "text",
+    "label": "Followers goal value",
+    "value": 1800,
+    "group": "Goals"
   },
   "primaryAccent": {
     "type": "colorpicker",
@@ -87,31 +99,20 @@
   },
   "textColor": {
     "type": "colorpicker",
-    "label": "Message text",
+    "label": "Main text color",
     "value": "#f3fff9",
     "group": "Holo Palette"
   },
   "mutedTextColor": {
     "type": "colorpicker",
-    "label": "Bot text",
-    "value": "#c5d8cf",
-    "group": "Holo Palette"
-  },
-  "nameColorMode": {
-    "type": "dropdown",
-    "label": "Username colors",
-    "value": "twitch",
-    "options": {
-      "twitch": "Brightened Twitch colors",
-      "accent": "Neon green",
-      "white": "White"
-    },
+    "label": "Secondary text color",
+    "value": "#bfe1d2",
     "group": "Holo Palette"
   },
   "panelOpacity": {
     "type": "slider",
     "label": "HellGlass opacity",
-    "value": 32,
+    "value": 31,
     "min": 0,
     "max": 90,
     "step": 1,
@@ -120,7 +121,7 @@
   "blurAmount": {
     "type": "slider",
     "label": "Background blur",
-    "value": 12,
+    "value": 13,
     "min": 0,
     "max": 30,
     "step": 1,
@@ -129,52 +130,61 @@
   "glowStrength": {
     "type": "slider",
     "label": "Edge glow strength",
-    "value": 62,
+    "value": 66,
     "min": 0,
     "max": 100,
     "step": 1,
     "group": "Layout"
   },
-  "fontSize": {
+  "labelSize": {
     "type": "slider",
-    "label": "Font size",
-    "value": 26,
-    "min": 14,
-    "max": 54,
+    "label": "Label size",
+    "value": 14,
+    "min": 10,
+    "max": 30,
     "step": 1,
     "group": "Layout"
   },
-  "messageGap": {
+  "valueSize": {
     "type": "slider",
-    "label": "Space between messages",
+    "label": "Value size",
+    "value": 14,
+    "min": 10,
+    "max": 30,
+    "step": 1,
+    "group": "Layout"
+  },
+  "cardGap": {
+    "type": "slider",
+    "label": "Space between cards",
     "value": 10,
     "min": 0,
-    "max": 30,
+    "max": 28,
     "step": 1,
     "group": "Layout"
   },
   "outerPadding": {
     "type": "slider",
     "label": "Outer padding",
-    "value": 18,
+    "value": 14,
     "min": 0,
-    "max": 80,
+    "max": 60,
     "step": 1,
     "group": "Layout"
   },
   "projectorHeight": {
     "type": "slider",
     "label": "Projector field height (%)",
-    "value": 44,
-    "min": 18,
-    "max": 80,
+    "value": 58,
+    "min": 24,
+    "max": 100,
     "step": 1,
     "group": "Projection"
   },
   "particleCount": {
     "type": "slider",
     "label": "Dust particle count",
-    "value": 16,
+    "value": 18,
     "min": 4,
     "max": 36,
     "step": 1,

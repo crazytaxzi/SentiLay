@@ -1,22 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Rajdhani:wght@600;700&display=swap');
 
 :root {
-  --primary: #d86cff;
-  --secondary: #4ee7ff;
-  --ember: #ff4f9f;
-  --text: #f7f5ff;
-  --muted: #c8c4d3;
-  --panel-alpha: 0.38;
-  --panel-alpha-mid: 0.36;
-  --panel-alpha-faint: 0.11;
-  --bot-alpha: 0.26;
-  --bot-alpha-mid: 0.21;
-  --bot-alpha-faint: 0.06;
+  --primary: #53ff9a;
+  --secondary: #b45dff;
+  --ember: #e9fff7;
+  --text: #f3fff9;
+  --muted: #c5d8cf;
+  --panel-alpha: 0.32;
+  --panel-alpha-mid: 0.28;
+  --panel-alpha-faint: 0.08;
+  --bot-alpha: 0.20;
+  --bot-alpha-mid: 0.16;
+  --bot-alpha-faint: 0.04;
   --blur: 12px;
   --font-size: 26px;
   --message-gap: 10px;
-  --glow-big: 11px;
-  --glow-small: 6px;
+  --glow-big: 12px;
+  --glow-small: 7px;
+  --projector-height: 44%;
 }
 
 * {
@@ -38,16 +39,92 @@ body {
 }
 
 #chat-shell {
+  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: flex-end;
   padding: 18px;
   pointer-events: none;
+  overflow: hidden;
+}
+
+#chat-ambient {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--projector-height);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 240ms ease, transform 340ms ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#chat-shell.has-messages #chat-ambient {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.projector-base {
+  position: absolute;
+  left: 4%;
+  right: 18%;
+  bottom: -1px;
+  height: 18px;
+  border-radius: 24px 24px 0 0;
+  background:
+    linear-gradient(90deg,
+      rgba(83, 255, 154, 0) 0%,
+      rgba(83, 255, 154, 0.28) 18%,
+      rgba(83, 255, 154, 0.60) 50%,
+      rgba(180, 93, 255, 0.28) 82%,
+      rgba(180, 93, 255, 0) 100%);
+  filter: blur(2px);
+  box-shadow:
+    0 0 18px rgba(83, 255, 154, 0.42),
+    0 0 38px rgba(180, 93, 255, 0.18);
+}
+
+.projector-beam {
+  position: absolute;
+  left: 2%;
+  bottom: 5px;
+  width: 72%;
+  height: calc(100% - 4px);
+  background:
+    radial-gradient(120% 95% at 12% 100%, rgba(83, 255, 154, 0.28) 0%, rgba(83, 255, 154, 0.10) 25%, rgba(83, 255, 154, 0.03) 48%, transparent 72%),
+    linear-gradient(180deg, rgba(180, 93, 255, 0.09), rgba(83, 255, 154, 0.02) 32%, transparent 78%);
+  clip-path: polygon(0 100%, 7% 24%, 100% 6%, 100% 100%);
+  filter: blur(6px);
+  opacity: 0.88;
+}
+
+#chat-particles {
+  position: absolute;
+  inset: 0 8% 0 0;
+  overflow: hidden;
+}
+
+#chat-particles .dust {
+  position: absolute;
+  bottom: -8%;
+  width: var(--size);
+  height: var(--size);
+  left: var(--left);
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 255, 247, 0.95) 0%, rgba(83, 255, 154, 0.75) 44%, rgba(180, 93, 255, 0.22) 78%, transparent 100%);
+  box-shadow: 0 0 8px rgba(83, 255, 154, 0.24);
+  animation: dust-rise var(--duration) linear infinite;
+  animation-delay: var(--delay);
 }
 
 #chat {
+  position: relative;
+  z-index: 2;
   width: 100%;
+  max-height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -67,13 +144,14 @@ body {
   background:
     linear-gradient(103deg,
       rgba(7, 10, 19, var(--panel-alpha)) 0%,
-      rgba(19, 10, 29, var(--panel-alpha-mid)) 72%,
-      rgba(7, 10, 19, var(--panel-alpha-faint)) 100%);
+      rgba(13, 18, 24, var(--panel-alpha-mid)) 68%,
+      rgba(11, 10, 22, var(--panel-alpha-faint)) 100%);
   box-shadow:
     0 9px 28px rgba(0, 0, 0, 0.27),
+    0 0 18px rgba(83, 255, 154, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.055);
-  backdrop-filter: blur(var(--blur)) saturate(135%);
-  -webkit-backdrop-filter: blur(var(--blur)) saturate(135%);
+  backdrop-filter: blur(var(--blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
   transform-origin: left bottom;
   animation: cinder-in 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -83,22 +161,24 @@ body {
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
-  background: linear-gradient(180deg, var(--secondary), var(--user) 48%, var(--ember));
+  background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 55%, var(--secondary)) 44%, var(--secondary));
   box-shadow:
-    0 0 var(--glow-big) var(--user),
-    0 0 var(--glow-small) var(--secondary);
+    0 0 var(--glow-big) color-mix(in srgb, var(--primary) 74%, transparent),
+    0 0 var(--glow-small) color-mix(in srgb, var(--secondary) 72%, transparent);
 }
 
 .chat-message::after {
   content: "";
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 32px;
-  height: 32px;
-  clip-path: polygon(35% 0, 100% 0, 100% 65%);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(216, 108, 255, 0.04) 60%, transparent 61%);
-  opacity: 0.8;
+  inset: auto 0 0 auto;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(83, 255, 154, 0.03) 58%, rgba(83, 255, 154, 0.08) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(180, 93, 255, 0.05) 34%, transparent 34%, transparent 66%, rgba(83, 255, 154, 0.03) 66%, transparent 72%);
+  mix-blend-mode: screen;
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 .message-row {
@@ -173,10 +253,10 @@ body {
 }
 
 .role-broadcaster {
-  border-color: rgba(255, 79, 159, 0.34);
+  border-color: rgba(83, 255, 154, 0.24);
   box-shadow:
-    0 9px 30px rgba(0, 0, 0, 0.29),
-    0 0 22px rgba(216, 108, 255, 0.09),
+    0 9px 30px rgba(0, 0, 0.29),
+    0 0 24px rgba(83, 255, 154, 0.07),
     inset 0 1px 0 rgba(255, 255, 255, 0.065);
 }
 
@@ -185,21 +265,21 @@ body {
   width: 0.28em;
   height: 0.28em;
   margin-right: 0.30em;
-  border: 1px solid var(--ember);
+  border: 1px solid var(--secondary);
   transform: rotate(45deg);
-  box-shadow: 0 0 8px var(--ember);
+  box-shadow: 0 0 8px var(--secondary);
 }
 
 .role-moderator::before {
-  background: linear-gradient(180deg, #8effff, var(--secondary) 52%, var(--primary));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 86%, white), var(--primary) 52%, var(--secondary));
 }
 
 .role-subscriber::before {
-  background: linear-gradient(180deg, var(--primary), #8f71ff 52%, var(--ember));
+  background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--secondary) 82%, white) 52%, var(--secondary));
 }
 
 .is-action .message-text {
-  color: #efe3ff;
+  color: #e8fff2;
   font-style: italic;
 }
 
@@ -208,9 +288,9 @@ body {
   padding-bottom: 8px;
   background: linear-gradient(103deg,
     rgba(7, 10, 19, var(--bot-alpha)) 0%,
-    rgba(11, 20, 29, var(--bot-alpha-mid)) 76%,
-    rgba(7, 10, 19, var(--bot-alpha-faint)) 100%);
-  opacity: 0.88;
+    rgba(8, 18, 16, var(--bot-alpha-mid)) 76%,
+    rgba(11, 10, 22, var(--bot-alpha-faint)) 100%);
+  opacity: 0.90;
 }
 
 .is-bot .message-row {
@@ -218,10 +298,10 @@ body {
 }
 
 .is-bot .username {
-  color: var(--secondary);
-  border-color: rgba(78, 231, 255, 0.30);
-  background: rgba(78, 231, 255, 0.06);
-  text-shadow: 0 0 10px rgba(78, 231, 255, 0.55);
+  color: var(--primary);
+  border-color: rgba(83, 255, 154, 0.24);
+  background: rgba(83, 255, 154, 0.05);
+  text-shadow: 0 0 10px rgba(83, 255, 154, 0.44);
 }
 
 .is-bot .message-text {
@@ -260,9 +340,27 @@ body {
   }
 }
 
+@keyframes dust-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.7);
+  }
+  10% {
+    opacity: 0.38;
+  }
+  75% {
+    opacity: 0.26;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift), -118%, 0) scale(1.05);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chat-message,
-  .message-leaving {
+  .message-leaving,
+  #chat-particles .dust {
     animation-duration: 1ms;
   }
 }
